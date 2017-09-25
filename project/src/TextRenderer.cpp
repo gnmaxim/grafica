@@ -1,22 +1,30 @@
-// Created by Margherita Donnici on 1/3/17.
-
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_opengl.h>
+
 #include "TextRenderer.h"
 #include "Textures.h"
 #include "Utils.h"
 
+
 void TextRenderer::initialize() {
 
     /* Inizializzo Font */
-    smallFont = TTF_OpenFont("../assets/font/courier.ttf", 25);
+    smallFont = TTF_OpenFont("../assets/font/courier.ttf", 32);
     if (smallFont == NULL) {
         fprintf(stderr, "Impossibile caricare il font (piccolo).\n");
     };
+    midFont = TTF_OpenFont("../assets/font/courier.ttf", 55);
+    if (midFont == NULL) {
+        fprintf(stderr, "Impossibile caricare il font (grande).\n");
+    };
     /* Inizializzo bigFont */
-    bigFont = TTF_OpenFont("../assets/font/courier.ttf", 40);
+    bigFont = TTF_OpenFont("../assets/font/courier.ttf", 80);
     if (bigFont == NULL) {
+        fprintf(stderr, "Impossibile caricare il font (grande).\n");
+    };
+    ultraFont = TTF_OpenFont("../assets/font/courier.ttf", 120);
+    if (ultraFont == NULL) {
         fprintf(stderr, "Impossibile caricare il font (grande).\n");
     };
 
@@ -56,6 +64,15 @@ void TextRenderer::render(SDL_Color textColor, SDL_Color backgroundColor, const 
             textSurface = TTF_RenderText_Blended_Wrapped(smallFont, text, textColor, 450);
         else if (quality == blended && !wrap)
             textSurface = TTF_RenderText_Blended(smallFont, text, textColor);
+    } else if (fontSize == mid){
+        if (quality == solid)
+            textSurface = TTF_RenderText_Solid(midFont, text, textColor);
+        else if (quality == shaded)
+            textSurface = TTF_RenderText_Shaded(midFont, text, textColor, backgroundColor);
+        else if (quality == blended && wrap)
+            textSurface = TTF_RenderText_Blended_Wrapped(midFont, text, textColor, 400);
+        else if (quality == blended && !wrap)
+            textSurface = TTF_RenderText_Blended(midFont, text, textColor);
     } else if (fontSize == big){
         if (quality == solid)
             textSurface = TTF_RenderText_Solid(bigFont, text, textColor);
@@ -65,7 +82,16 @@ void TextRenderer::render(SDL_Color textColor, SDL_Color backgroundColor, const 
             textSurface = TTF_RenderText_Blended_Wrapped(bigFont, text, textColor, 400);
         else if (quality == blended && !wrap)
             textSurface = TTF_RenderText_Blended(bigFont, text, textColor);
-    }
+    }else if (fontSize == ultra){
+      if (quality == solid)
+          textSurface = TTF_RenderText_Solid(ultraFont, text, textColor);
+      else if (quality == shaded)
+          textSurface = TTF_RenderText_Shaded(ultraFont, text, textColor, backgroundColor);
+      else if (quality == blended && wrap)
+          textSurface = TTF_RenderText_Blended_Wrapped(ultraFont, text, textColor, 350);
+      else if (quality == blended && !wrap)
+          textSurface = TTF_RenderText_Blended(ultraFont, text, textColor);
+  }
 
 	assert(textSurface);
 
@@ -132,5 +158,3 @@ void TextRenderer::render(SDL_Color textColor, SDL_Color backgroundColor, const 
 	glFrontFace(GL_CW);
 
 }
-
-

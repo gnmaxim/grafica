@@ -8,35 +8,54 @@
 #include "Utils.h"
 #include "Game.h"
 
-static TriangleWinding submarineMeshWinding = TriangleWinding::CCW;
+ #include <iostream>
+
+static TriangleWinding sDMeshWinding = TriangleWinding::CCW;
 float height = 0;
 
 // Variabili di tipo mesh
-Mesh hull("../assets/obj/corpo.obj", submarineMeshWinding); // chiama il costruttore
+Mesh hull("../assets/obj/corpo.obj", sDMeshWinding); // chiama il costruttore
 
 extern bool useWireframe; // var globale esterna: per usare l'evnrionment mapping
 
 // DoStep: facciamo un passo di fisica (a delta_t costante)
-//
 // Indipendente dal rendering.
 void StarDestroyer::DoStep(Game &game) {
-    // Computiamo l'evolversi del sottomarino
+    /* Evoluzione della fisica simulata della nave */
     float vxm, vym, vzm; // velocita' in spazio macchina
+
     // da vel frame mondo a vel frame macchina
     float cosf = cos(facing * (float) M_PI / 180.f);
     float sinf = sin(facing * (float) M_PI / 180.f);
+
     float sinfy = sin(facingy * (float) M_PI / 180.f);
+    float cosfy = cos(facingy * (float) M_PI / 180.f);
+
+    if (!turbo) {
+      if (game.getGameSeconds() > nextTurbo - turboDelay + 1) {
+        grip = 0.45;
+        attritoY = 0.92;
+        vym = sinfy * 0.1f;
+      }
+    }
+    else {
+      grip = 0.001;
+      attritoY = 1;
+      vym = sinfy * 0.5f;
+    }
     vxm = +cosf * vx - sinf * vz;
-    vym = sinfy * 0.1f;
+    // vym = vy;
     vzm = +sinf * vx + cosf * vz;
 
     /* Gestione propulsione avanti e indietro */
     if (game.inputManager.isMoveForwardPressed()) vzm -= accMax;
     if (game.inputManager.isMoveBackwardPressed()) vzm += accMax;
 
+    // if (game.inputManager.isUpKeyPressed()) vym += accMax; // salita
+    // if (game.inputManager.isDownKeyPressed()) vym -= accMax; // discesa
+
     // Se il turbo è attivato
     if (turbo) {
-
         if (game.getGameSeconds() < startTurboTime + turboDuration) {
             vzm -= accMax * turboAcc;
         } else {
@@ -56,23 +75,16 @@ void StarDestroyer::DoStep(Game &game) {
     facingy = facingy + (vzm * grip) * (game.viewBeta * 1.1f);
 
     /* Per scelte di gameplay non si può inclinare la nave di oltre 30 gradi in verticale */
-    if (facingy < -60) {
-      facingy = -60;
+    if (facingy < -45) {
+      facingy = -45;
     }
-    if (facingy > 60) {
-      facingy = 60;
+    if (facingy > 45) {
+      facingy = 45;
     }
 
     /* È necessario fermare la rotazione della nave se non viene più mosso il mouse */
     game.viewAlpha = 0;
     game.viewBeta = 0;
-
-    // Rotazione mozzo (a seconda della velocita' sulla z)
-    float da; //delta angolo
-    da = (360.f * vzm) / (2.f * (float) M_PI * raggioRuotaA);
-    mozzoA += da;
-    da = (360.f * vzm) / (2.f * (float) M_PI * raggioRuotaP);
-    mozzoP += da;
 
     // Ritorno a vel coord mondo
     vx = +cosf * vxm + sinf * vzm;
@@ -95,7 +107,8 @@ void StarDestroyer::DoStep(Game &game) {
 
 void StarDestroyer::Init() {
     // inizializzo lo stato della macchina
-    px = pz = facing = facingy = 0.f; // posizione e orientamento
+    px = pz = facingy = 0.f; // posizione e orientamento
+    facing = 0;
     py = 0;
 
     mozzoA = mozzoP = sterzo = 0.f;   // stato
@@ -106,22 +119,25 @@ void StarDestroyer::Init() {
     velSterzo = 2.4f;         // A
     velRitornoSterzo = 0.93f; // B, sterzo massimo = A*B / (1-B)
 
-    accMax = 0.0011f;
+    accMax = 0.0025f;
 
     // Attriti: percentuale di velocita' che viene mantenuta
     // 1 = no attrito
     // <<1 = attrito grande
-    attritoZ = 0.991f;  // piccolo attrito sulla Z
-    attritoX = 0.8f;  // grande attrito sulla X (per non fare slittare il sottomarino)
-    attritoY = 0.95f; // attrito per la salita e discesa
+    attritoZ = 0.98f;  // piccolo attrito sulla Z
+    attritoX = 0.98f;  // grande attrito sulla X (per non fare slittare il sottomarino)
+    attritoY = 0.88f; // attrito per la salita e discesa
 
     // Nota: vel max = accMax*attritoZ / (1-attritoZ)
 
     raggioRuotaA = 0.25f;
     raggioRuotaP = 0.35f;
 
-    grip = 0.45f; // quanto il facing del sottomarino si adegua velocemente allo sterzo
+    grip = 0.5f; // quanto il facing del sottomarino si adegua velocemente allo sterzo
+
+    return;
 }
+
 
 // Attiva una luce di openGL per simulare un faro della macchina
 void StarDestroyer::SetLight() const {
@@ -155,13 +171,10 @@ void StarDestroyer::SetLight() const {
 	utils::checkGLError(__FILE__, __LINE__);
 }
 
-
-void StarDestroyer::RenderAllParts(bool usecolor) const {
-  // Disegna corpo del sottomarino con una mesh
-  // glEnable(GL_COLOR_MATERIAL);
+void StarDestroyer::RenderAllParts(bool usecolor, bool trb) const {
   glPushMatrix();
   {
-    static constexpr float StarDestroyerScale = 0.12f; // 0.15
+    static constexpr float StarDestroyerScale = 0.12f;
     const Vector3 ObjectScale{StarDestroyerScale, StarDestroyerScale, -StarDestroyerScale};
     glScalef(ObjectScale.X(), ObjectScale.Y(), ObjectScale.Z());
     static constexpr bool useTexCoords = true;
@@ -170,14 +183,21 @@ void StarDestroyer::RenderAllParts(bool usecolor) const {
     {
       glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
       {
-        float specular[4] = {1.f, 1.f, 1.f, 1.f};
+        float specular[4] = {100.f, 100.f, 100.f, 1.f};
 				glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
 				float diffuse[4] = {1.f, 1.f, 1.f, 1.f};
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-				float ambient[4] = {0.1f, 0.1f, 0.1f, 1.f};
+				float ambient[4] = {0.01f, 0.01f, 0.01f, 1.f};
+        float turbo[4] = {100.f, 0.f, 0.f, 1.f};
 				glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
 				glMaterialf(GL_FRONT, GL_SHININESS, 128.f);
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, ambient);
+        if (trb)
+        {
+          glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, ambient);
+        }
+        else {
+          glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, turbo);
+        }
       }
       utils::checkGLError(__FILE__, __LINE__);
       glColor3f(1.f, 1.f, 1.f);
@@ -213,16 +233,15 @@ void StarDestroyer::render(const Game &game) const {
         glRotatef(facingy, 1.f, 0.f, 0.f);
 
         // sono nello spazio MACCHINA
-
         SetLight();
         if (!useHeadlight) {glDisable(GL_LIGHT1);}
-        RenderAllParts(/*usecolor*/ true);
+        RenderAllParts(/*usecolor*/ true, getTurboCharge(game));
 
     }
     glPopMatrix();
 
 	/* Ombre */
-  if (game.useShadow) {
+  if (game.renderShadows) {
     glPushMatrix();
     {
       /* Per far sì che l'ombra venga visualizzata sopra al pannello */
@@ -234,78 +253,82 @@ void StarDestroyer::render(const Game &game) const {
 
       /* Seleziona la zona della mappa in cui prendere in considerazione il
         calcolo delle ombre */
-      if (getPosition().X() > 0) {
-        glScalef(1-(getPosition().X()/5.f), 1- (getPosition().X()/5.f), 1-(getPosition().X()/5.f));
+      if (getPosition().X() > 1) {
+        glScalef(1 - (getPosition().X() / 5.f),
+                  1 - (getPosition().X() / 5.f),
+                  1 - (getPosition().X() / 5.f));
       }
       else {
         glScalef(0.f, 0.f, 0.f);
       }
 
       // Colore dell'ombra
-      glColor3f(12.f/255.f, 12.f/255.f, 12.f/255.f);
+      glColor3f(12.f / 255.f, 12.f / 255.f, 12.f / 255.f);
 
       // Appiattimento sull'asse X, viene aggiunto 1% su Y e Z
       glScalef(1.f, 1.01f, 1.01f);
-      glTranslatef(0.f, 0, 0.f); // alzo l'ombra di un epsilon per evitare z-fighting con il pavimento
+
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      RenderAllParts(/*usecolor*/ false); // disegno il sottomarino appiattito
+
+      /* Rendering della nave in versione piatta */
+      RenderAllParts(false, false);
+
       glDisable(GL_BLEND);
-      glColor3f(1.f, 1.f,1.f);
-      }
-      glPopMatrix();
+      glColor3f(1.f, 1.f, 1.f);
     }
+    glPopMatrix();
+  }
 
+  utils::checkGLError(__FILE__, __LINE__);
 
-
-    utils::checkGLError(__FILE__, __LINE__);
+  return;
 }
 
 void StarDestroyer::onInputEvent(InputEvent inputEvent, Game& game) {
-    switch (inputEvent){
+  switch (inputEvent){
+    case InputEvent::TurboButtonPressed:
+      if (game.getGameSeconds() > nextTurbo) {
+        turbo = true;
+        startTurboTime = game.getGameSeconds();
+      }
+    break;
+    case InputEvent::SwitchCamera:
+      game.switchCamera();
+      break;
+    case InputEvent::ToggleHelpMenu:
+      game.menuManager.setMenuState(MenuState::graphicsMenu);
+      game.setState(GameState::Paused);
+      break;
+    case InputEvent::UseShadows:
+      game.renderShadows = !game.renderShadows;
+      break;
+  }
 
-        case InputEvent::TurboButtonPressed:
-                if (game.getGameSeconds() > nextTurbo) {
-                    turbo = true;
-                    startTurboTime = game.getGameSeconds();
-                }
-            break;
-
-        case InputEvent::SwitchCamera:
-            game.switchCamera();
-            break;
-        case InputEvent::UseHeadlight:
-            useHeadlight = !useHeadlight;
-            break;
-
-        case InputEvent::ToggleHelpMenu:
-            if (game.getGameSeconds() > game.tutorial.tutorialEndDate) {
-                game.menuManager.setMenuState(MenuState::graphicsMenu);
-                game.setState(GameState::Paused);
-            }
-            break;
-
-        case InputEvent::ToggleCaustics:
-            game.map.caustics = !game.map.caustics;
-            break;
-
-        case InputEvent::UseShadows:
-            game.useShadow = !game.useShadow;
-            break;
-    }
+  return;
 }
 
-    float StarDestroyer::getTurboCharge(const Game& game)const {
-    float turboCharge = 1.f;
-    const float dateNow = game.getGameSeconds();
-    const float turboEndDate = startTurboTime + turboDuration;
-    if (turbo) {
-        turboCharge = 0.f;
-    } else if (dateNow >= nextTurbo) {
-        turboCharge = 1.f;
-    } else {
-        float rawTurboCharge = (dateNow - turboEndDate)* (1/(turboDelay));
-        turboCharge = fminf(fmaxf(rawTurboCharge, 0.f), 1.f); // deve essere compreso tra 0 ed 1
-    }
-    return turboCharge;
+float StarDestroyer::getTurboCharge(const Game& game)const {
+  float turboCharge = 1.f;
+  const float dateNow = game.getGameSeconds();
+  const float turboEndDate = startTurboTime + turboDuration;
+
+  if (turbo) {
+    turboCharge = 0.f;
+  }
+  else if (dateNow >= nextTurbo) {
+    turboCharge = 1.f;
+  }
+  else {
+    float rawTurboCharge = (dateNow - turboEndDate)* (1/(turboDelay));
+    turboCharge = fminf(fmaxf(rawTurboCharge, 0.f), 1.f); // deve essere compreso tra 0 ed 1
+  }
+
+  return turboCharge;
+}
+
+void StarDestroyer::fillTurboCharge(const Game& game) {
+  nextTurbo = game.getGameSeconds();
+
+  return;
 }

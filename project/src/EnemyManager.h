@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 12/29/16.
-
 #pragma once
 
 
@@ -26,11 +24,11 @@ private:
   int spawnWave = 0;
   static constexpr float  spawnIntervalReductionFactor = 0.005f;
   static constexpr float  baseSpawnInterval = 3.f;
-  void handleCollisions(const StarDestroyer &sub, Game &game);
+  void handleCollisions(const StarDestroyer &sD, Game &game);
   void handleEnemySpawning(const Game& game);
   void spawnEnemy(const Game& game);
   float getNextSpawnInterval() const;
   // Returns success
-  bool getRandomSpawnPosition(const Point3& subPosition, Point3& outSpawnRadius) const;
+  bool getRandomSpawnPosition(const Point3& sDPosition, Point3& outSpawnRadius) const;
 
 };

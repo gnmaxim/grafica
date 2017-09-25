@@ -1,5 +1,3 @@
-﻿// Created by Margherita Donnici on 12/29/16.
-
 #pragma once
 
 #include "point2.h"
@@ -26,7 +24,7 @@ struct Rock
 
 class Space {
 	private:
-		void drawSand(const Point3& subPosition) const;
+		void drawSand(const Point3& sDPosition) const;
 		void drawWaterBackground() const;
 		void drawPlane(const float width, const int quadCount, const float tileSize, const Point3& center = Point3{0.f, 0.f, 0.f}) const;
 		void drawTop(const float width, const int quadCount, const float tileSize, const Point3& center = Point3{0.f, 0.f, 0.f}) const;

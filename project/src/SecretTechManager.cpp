@@ -1,4 +1,6 @@
-// Created by Margherita Donnici on 12/27/16.
+/*
+  22/09/2017
+*/
 
 #include "SecretTechManager.h"
 #include "Utils.h"
@@ -11,7 +13,7 @@ class Game;
 /* Disegna tutti i pezzi di junk sullo schermo */
 void SecretTechManager::renderSecretTech(const Game& game) const {
     for (const SecretTech &pieceOfSecretTech : allSecretTech) {
-        pieceOfSecretTech.render(game.getGameSeconds(), game.useShadow);
+        pieceOfSecretTech.render(game.getGameSeconds(), game.renderShadows);
     }
 	utils::checkGLError(__FILE__, __LINE__);
 }
@@ -19,8 +21,8 @@ void SecretTechManager::renderSecretTech(const Game& game) const {
 /* TRUE se c'è una collisione tra i 2 oggetti */
 bool SecretTechManager::doesCollide(const SecretTech &pieceOfSecretTech, const Game& game) const {
     const Point3 junkPosition = pieceOfSecretTech.getPosition(game.getGameSeconds());
-    const Point3 submarinePosition = game.sub.getPosition();
-    return utils::distance(junkPosition, submarinePosition) < pieceOfSecretTech.getRadius() + game.sub.getRadius();
+    const Point3 sDPosition = game.sD.getPosition();
+    return utils::distance(junkPosition, sDPosition) < pieceOfSecretTech.getRadius() + game.sD.getRadius();
 }
 
 void SecretTechManager::handleCollisions(Game &game) {
@@ -42,7 +44,8 @@ void SecretTechManager::handleCollisions(Game &game) {
     /* Incrementa punteggio se necessario */
     for (const SecretTech& pieceOfSecretTech : allSecretTech){
         if (doesCollide(pieceOfSecretTech, game)) {
-            game.incrementScore(10);
+            game.sD.fillTurboCharge(game);
+            game.incrementScore(50000);
         }
     }
 

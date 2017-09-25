@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 12/29/16.
-
 #pragma once
 
 
@@ -31,7 +29,7 @@ public:
     void render(const Game &game) const;
 
     /* Esegue un passo di fisica */
-    void doStep(const StarDestroyer &sub);
+    void doStep(const StarDestroyer &sD);
 
     Vector3 rotation; // angoli di Eulero, in gradi, per calcolare la rotazione del nemico
 

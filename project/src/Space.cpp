@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 12/29/16.
-
 #include "Space.h"
 #include "Textures.h"
 #include "Utils.h"
@@ -9,7 +7,7 @@
 static Mesh rockMesh((char *) "../assets/obj/rock.obj");
 
 
-void Space::drawSand(const Point3& subPosition) const {
+void Space::drawSand(const Point3& sDPosition) const {
 
   glBindTexture(GL_TEXTURE_2D, Texture::Sand);
   glEnable(GL_TEXTURE_2D);
@@ -32,7 +30,7 @@ void Space::drawSand(const Point3& subPosition) const {
 	drawTop(terrainWidth, /*quadsPerSide*/ 1, /*tileSize*/ 1000.f);
 
   // Terreno ad alto dettaglio
-  //drawPlane(terrainWidth/10.f, /*quadCount*/ 150, /*tileSize*/ 5.f, Point3{subPosition.X(), 0.05f, subPosition.Z()});
+  //drawPlane(terrainWidth/10.f, /*quadCount*/ 150, /*tileSize*/ 5.f, Point3{sDPosition.X(), 0.05f, sDPosition.Z()});
 
   glDisable(GL_TEXTURE_2D);
   utils::checkGLError(__FILE__, __LINE__);
@@ -196,21 +194,18 @@ void drawCubeFill(const float size) {
 void Space::drawWaterBackground() const {
   glColor3f(1.f, 1.f, 1.f);
   glDisable(GL_LIGHTING);
-  //glDisable(GL_FOG);
   glPushMatrix();
   {
     glBindTexture(GL_TEXTURE_2D, Texture::WaterBackground);
     glEnable(GL_TEXTURE_2D);
-    static constexpr float skyboxSize = 1200.f;
+    static constexpr float skyboxSize = 1000.f;
     glTranslatef(0.f, -1.f, 0.f);
-   // 	glTranslatef(
-    //     0.f, -3.f,
-    //     0.f); // Make sure there is no seam between the terrain and the skybox
+
     drawCubeFill(skyboxSize);
+
     glDisable(GL_TEXTURE_2D);
   }
   glPopMatrix();
-  //glEnable(GL_FOG);
   glEnable(GL_LIGHTING);
   utils::checkGLError(__FILE__, __LINE__);
 }
@@ -233,7 +228,7 @@ void Space::initialize()
 
 void Space::render(const Game& game) const {
   drawWaterBackground();
-	drawSand(game.sub.getPosition());
+	drawSand(game.sD.getPosition());
   utils::checkGLError(__FILE__, __LINE__);
 
 	return;

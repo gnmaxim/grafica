@@ -1,26 +1,26 @@
 ﻿#pragma once
 
-
 #include "point3.h"
 #include "Space.h"
 #include "InputEvent.h"
 
+
 class Game;
-class Input;
 class Enemy;
+class Input;
 enum class InputEvent;
 
-
 class StarDestroyer {
+  public:
+    void Init();
+    void DoStep(Game &game); /* Evoluzione dello stato della nave */
+    void render(const Game &game) const;
+    StarDestroyer() {
+      Init();
+    }
 
-public:
-    // Metodi
-    void Init(); // inizializza variabili
-    void render(const Game &game) const; // disegna a schermo
-    void DoStep(Game &game); // computa un passo del motore fisico
-    StarDestroyer() { Init(); } // costruttore
-
-    void onInputEvent(InputEvent inputEvent, Game& game); // gestisce gli eventi di input
+    /* Gestore degli Input */
+    void onInputEvent(InputEvent inputEvent, Game& game);
 
     float getRadius() const {
         return 3.f;
@@ -30,38 +30,40 @@ public:
         return {px, py, pz};
     }
 
-	float getFacing() const { return facing;}
-  float getFacingY() const { return facingy;}
+  	float getFacing() const { return facing;}
+    float getFacingY() const { return facingy;}
 
     float getTurboCharge(const Game& game)const;
+    void fillTurboCharge(const Game& game);
 
-private:
-	// STATO DEL SOTTOMARINO
-	// (DoStep fa evolvere queste variabili nel tempo)
-	float px = 0.f;
+  private:
+    /* Variabili che descrivono la posizione */
+	  float px = 0.f;
+    float py;
+    float pz;
 
-	float py, pz; // posizione e orientamento
-  float facing, facingy;
-	float mozzoA, mozzoP, sterzo; // stato interno
-	float vx, vy, vz; // velocita' attuale
+    /* Orientamento della nave secondo i due angoli */
+    float facing, facingy;
 
-	// STATS DEL SOTTOMARINO
-	// (di solito rimangono costanti)
-	float velSterzo, velRitornoSterzo, accMax,
-		raggioRuotaA, raggioRuotaP, grip,
-		attritoX, attritoY, attritoZ; // attriti
+    /* Velocità attuale sugli assi */
+    float vx, vy, vz;
+
+  	float mozzoA, mozzoP, sterzo;
+    float velSterzo, velRitornoSterzo, accMax;
+    float raggioRuotaA, raggioRuotaP, grip;
+
+    /* Attriti sui vari assi */
+    float attritoX, attritoY, attritoZ; // attriti
 
     bool useHeadlight = true;
 
-private:
-
-    //Variabili per il turbo
+    /* Veriabili per la gestione dell'Ultramotore */
     bool turbo = false; // TRUE se il turbo è attivo, FALSE altrimenti
     float startTurboTime = 0.f; // (in secondi) ultima data di inizio del turbo
     float nextTurbo = 0.f; // (in secondi) prossima data dopo la quale sarà possibile usare il turbo
-    float turboDelay = 30.f; // (in secondi) il turbo può essere usato solo una volta ogni 30 secondi
-    float turboDuration = 5.f; // durata del turbo (in secondi)
-    float turboAcc = 2.f; // accelerazione del turbo
+    float turboDelay = 45.f; // (in secondi) il turbo può essere usato solo una volta ogni 30 secondi
+    float turboDuration = 1.f; // durata del turbo (in secondi)
+    float turboAcc = 20.f; // accelerazione del turbo
 
     // Variabili per evitare che il sottomarino esca dai limiti della mappa "giocabile"
     float maxX = Space::width / 2;
@@ -71,6 +73,6 @@ private:
     float maxY = Space::waterHeight;
     float minY = Space::terrainHeight;
 
-    void RenderAllParts(bool usecolor) const;
+    void RenderAllParts(bool usecolor, bool trb) const;
     void SetLight() const;
 };

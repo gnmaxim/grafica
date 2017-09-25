@@ -8,12 +8,6 @@
 #include "Utils.h"
 #include "Game.h"
 
-/*
-  TO DO:
-  - posizione sole (base)
-  - rotazione sole (facoltativa)
-  - movimento texture sole (facoltativa)
-*/
 
 static TriangleWinding StarMeshWinding = TriangleWinding::CCW;
 
@@ -33,7 +27,7 @@ void Star::Init() {
 }
 
 
-void Star::RenderAllParts(bool usecolor) const
+void Star::RenderAllParts(bool usecolor, const Game& game) const
 {
 
  glEnable ( GL_COLOR_MATERIAL ) ;
@@ -41,7 +35,7 @@ void Star::RenderAllParts(bool usecolor) const
 
   // Luce del sole
   {
-    GLfloat lightColor[4] = {255.f / 255.f, 255.f / 255.f, 255.f / 255.f, 1.0f};
+    GLfloat lightColor[4] = {191.f / 255.f, 191.f / 255.f, 255.f / 255.f, 1.0f};
     float direction[4] = {px, py, pz, 1.f}; // ultima comp=0 => luce direzionale
     glLightfv(GL_LIGHT0, GL_POSITION, direction);
 
@@ -60,7 +54,7 @@ void Star::RenderAllParts(bool usecolor) const
   glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission);
   glPushMatrix();
   {
-    static constexpr float StarDestroyerScale = 50.f;
+    static constexpr float StarDestroyerScale = 40.f;
     const Vector3 ObjectScale{StarDestroyerScale, StarDestroyerScale, -StarDestroyerScale};
     glScalef(ObjectScale.X(), ObjectScale.Y(), ObjectScale.Z());
     static constexpr bool useTexCoords = true;
@@ -112,9 +106,9 @@ void Star::render(const Game &game) const {
   glPushMatrix();
   {
     glTranslatef(px, py, pz);
-    glRotatef(facing, 0.f, 1.f, 0.f);
+    // glRotatef(game.getGameSeconds(), 0.f, 1.f, 0.f);
 
-    RenderAllParts(/*usecolor*/ true);
+    RenderAllParts(/*usecolor*/ true, game);
   }
   glPopMatrix();
 

@@ -19,12 +19,6 @@ void Input::EatKey(SDL_Keycode keycode, bool pressed, bool joystick, Game &game)
                 case SDLK_d:
                     rightKeyPressed = true;
                     break;
-                case SDLK_q:
-                    upKeyPressed = true;
-                    break;
-                case SDLK_e:
-                    downKeyPressed = true;
-                    break;
                 default: {
                     bool HasFoundEvent = false;
                     InputEvent Event;
@@ -91,7 +85,7 @@ void Input::onInputEvent(InputEvent inputEvent, Game &game) {
         game.menuManager.onInputEvent(inputEvent, game);
     } else {
         if (game.getCurrentState() == GameState::Playing) {
-            game.sub.onInputEvent(inputEvent, game);
+            game.sD.onInputEvent(inputEvent, game);
 
         }
     }
@@ -111,26 +105,18 @@ void Input::KeyCodeToInputEvent(SDL_Keycode keycode, InputEvent &outInputEvent, 
             outInputEvent = InputEvent::ToggleHelpMenu;
             isEventFound = true;
             break;
-
+        case SDLK_RETURN:
+            outInputEvent = InputEvent::ToggleHelpMenu;
+            isEventFound = true;
+            break;
         case SDLK_F2:
             outInputEvent = InputEvent::SwitchCamera;
             isEventFound = true;
             break;
-
         case SDLK_F3:
-            outInputEvent = InputEvent::UseHeadlight;
-            isEventFound = true;
-            break;
-
-        case SDLK_F4:
-            outInputEvent = InputEvent::ToggleCaustics;
-            isEventFound = true;
-            break;
-
-        case SDLK_F5:
-            outInputEvent = InputEvent::UseShadows;
-            isEventFound = true;
-            break;
+          outInputEvent = InputEvent::UseShadows;
+          isEventFound = true;
+          break;
 
         default:
             isEventFound = false;

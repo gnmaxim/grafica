@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 1/19/17.
-
 #include "Tutorial.h"
 #include "Utils.h"
 #include "point2.h"
@@ -28,34 +26,34 @@ void Tutorial::render(const Game &game) const {
         utils::setCoordToPixel(game.screenSize);
 
         // Gestione animazione
-        {
-            // Inizio Tutorial
-            {
-
-                const float animationBeginDate = tutorialBeginDate;
-                const float dateNow = game.getGameSeconds();
-
-                const float scaleRaw = (dateNow - animationBeginDate) / animationInterval; // Interpolazione lineare
-                const float scaleClamped = fminf(fmaxf(scaleRaw, 0.f), 1.f); // il valore deve essere compreso tra 0 ed 1
-                const float scaleSin = sinf(scaleClamped * (float)M_PI / 2.f);
-                glTranslatef(0.f, game.screenSize.Y()/2.f, 0.f);
-                glScalef(1.f, scaleSin, 1.f);
-                glTranslatef(0.f, -game.screenSize.Y()/2.f, 0.f);
-
-            }
-            // Fine Tutorial
-            {
-                const float animationBeginDate = tutorialEndDate;
-                const float dateNow =game.getGameSeconds();
-
-                const float scaleRaw = 1 - (dateNow - animationBeginDate) / animationInterval; // Interpolazione lineare
-                const float scaleClamped = fminf(fmaxf(scaleRaw, 0.f), 1.f); // il valore deve essere compreso tra 0 ed 1
-                const float scaleSin = sinf(scaleClamped * (float)M_PI / 2.f);
-                glTranslatef(0.f, game.screenSize.Y()/2.f, 0.f);
-                glScalef(1.f, scaleSin, 1.f);
-                glTranslatef(0.f, -game.screenSize.Y()/2.f, 0.f);
-            }
-        }
+        // {
+        //     // Inizio Tutorial
+        //     {
+        //
+        //         const float animationBeginDate = tutorialBeginDate;
+        //         const float dateNow = game.getGameSeconds();
+        //
+        //         const float scaleRaw = (dateNow - animationBeginDate) / animationInterval; // Interpolazione lineare
+        //         const float scaleClamped = fminf(fmaxf(scaleRaw, 0.f), 1.f); // il valore deve essere compreso tra 0 ed 1
+        //         const float scaleSin = sinf(scaleClamped * (float)M_PI / 2.f);
+        //         glTranslatef(0.f, game.screenSize.Y()/2.f, 0.f);
+        //         glScalef(1.f, scaleSin, 1.f);
+        //         glTranslatef(0.f, -game.screenSize.Y()/2.f, 0.f);
+        //
+        //     }
+        //     // Fine Tutorial
+        //     {
+        //         const float animationBeginDate = tutorialEndDate;
+        //         const float dateNow =game.getGameSeconds();
+        //
+        //         const float scaleRaw = 1 - (dateNow - animationBeginDate) / animationInterval; // Interpolazione lineare
+        //         const float scaleClamped = fminf(fmaxf(scaleRaw, 0.f), 1.f); // il valore deve essere compreso tra 0 ed 1
+        //         const float scaleSin = sinf(scaleClamped * (float)M_PI / 2.f);
+        //         glTranslatef(0.f, game.screenSize.Y()/2.f, 0.f);
+        //         glScalef(1.f, scaleSin, 1.f);
+        //         glTranslatef(0.f, -game.screenSize.Y()/2.f, 0.f);
+        //     }
+        // }
 
         // Disegno il tutorial
 
@@ -109,9 +107,9 @@ void Tutorial::render(const Game &game) const {
 
                 Point2 titleStringPosition = {game.defaultScreenSize.X() / 2.f - 200.f,
                                               game.defaultScreenSize.Y() / 2.f + 200.f};
-                game.textRenderer.render(Colors::Yellow(), Colors::Black(),
+                game.textRenderer.render(Colors::Red(), Colors::Black(),
                                          titleString.c_str(), titleStringPosition,
-                                         blended, big, /*wrapping*/ false);
+                                         blended, big, /*wrapping*/ true);
             }
 
             // Draw Explanation
@@ -120,7 +118,7 @@ void Tutorial::render(const Game &game) const {
                                             " In attesa della flotta imperiale, è neccessario raccogliere i resti per evitare che entrino "
                                             " in contatto con le nostre tecnologie più avanzate. "
                                             " Loro non ci spareranno dato che abbiamo molti prigionieri a bordo, ma dobbiamo evitare "
-                                            " a tutto i costo l'abbordaggio delle loro navi. Massima velocità!";
+                                            " a tutto i costi l'abbordaggio delle loro navi. Non si devono avvicinare!";
 
                 Point2 explainStringPosition = {game.defaultScreenSize.X() / 2.f - 100.f,
                                                 game.defaultScreenSize.Y() / 2.f - 75.f};

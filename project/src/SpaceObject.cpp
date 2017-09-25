@@ -35,7 +35,7 @@ void SpaceObject::RenderAllParts(bool usecolor) const
 
   glPushMatrix();
   {
-    static constexpr float StarDestroyerScale = 79.f;
+    static constexpr float StarDestroyerScale = 70.f;
     const Vector3 ObjectScale{StarDestroyerScale, StarDestroyerScale, -StarDestroyerScale};
     glScalef(ObjectScale.X(), ObjectScale.Y(), ObjectScale.Z());
     static constexpr bool useTexCoords = true;
@@ -50,9 +50,9 @@ void SpaceObject::RenderAllParts(bool usecolor) const
         glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
         float ambient[4] = {0.1f, 0.1f, 0.1f, 1.f};
         glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-        glMaterialf(GL_FRONT, GL_SHININESS, 10.f);
-        GLfloat mat_shininess[] = { 50.f };
+        GLfloat mat_shininess[] = { 20.f };
         glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, ambient);
       }
       utils::checkGLError(__FILE__, __LINE__);
       glColor3f(1.f, 1.f, 1.f);

@@ -38,6 +38,6 @@ class Star
   private:
     float px, py, pz, facing;
 
-    void RenderAllParts(bool usecolor) const;
+    void RenderAllParts(bool usecolor, const Game& game) const;
     void SetLight() const;
 };

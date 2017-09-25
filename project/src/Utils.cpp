@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 12/27/16.
-
 #include "Utils.h"
 #include <SDL2/SDL_timer.h>
 #include <sstream>
@@ -54,7 +52,7 @@ GLenum utils::checkGLError(const char* file, int line)
 			break;
 		case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION";
 			break;
-		default: 
+		default:
 			assert(false);
 			break;
 		}

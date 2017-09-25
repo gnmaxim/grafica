@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 12/29/16.
-
 #pragma once
 #include <SDL2/SDL_hints.h>
 

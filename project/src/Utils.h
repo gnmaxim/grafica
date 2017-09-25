@@ -1,5 +1,3 @@
-// Created by Margherita Donnici on 12/27/16.
-
 #pragma once
 
 #include "point3.h"
