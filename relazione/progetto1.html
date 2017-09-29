@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+	<title>HTML Editor - Full Version</title>
+</head>
+<body>
+<h2>Struttura del Progetto</h2>
+
+<p>La realizzazione di Star Destroyer segue un approccio orientato agli oggetti. Verranno ora elencate le classi pi&ugrave; rilevanti e i loro principi di funzionamento.</p>
+
+<pre>
+main.cpp</pre>
+
+<p style="margin-left: 40px;">&Egrave; stato&nbsp;modificato il codice fornito in ambiente didattico. Per esempio &egrave; stata scelta la modalit&agrave; full screen;&nbsp;&egrave; stato disabilitato il cursore del mouse tramite SDL_ShowCursor(SDL_DISABLE) ed &egrave; stata impostata la modalit&agrave; di movimento relativo del mouse&nbsp;SDL_SetRelativeMouseMode(SDL_TRUE) per non impattare nei bordi dello schermo, garantendo un movimento illimitato.</p>
+
+<pre>
+Game</pre>
+
+<p style="margin-left: 40px;">All&#39;interno del codice main si trova l&#39;istanziazione della classe Game, che rappresenta proprio il gioco in questione. Si tratta della classe che gestisce gli stati interni del gioco e&nbsp;della camera;&nbsp;l&#39;inizializzazione e gestione della scena e&nbsp;dei suoi elementi; il HUD (inclusi i relativi testi). La classe inizializza, gestisce e disegna le classi contenute che vengono elencate di seguito.</p>
+
+<pre style="margin-left: 40px;">
+StarDestroyer</pre>
+
+<p style="margin-left: 80px;">Contiene metodi per inizializzare le variabili;&nbsp;gestire l&#39;elementare implementazione della fisica; disegnare lo StarDestroyer in base al suo stato e altro. &Egrave; stata poi introdotta la simulazione del movimento&nbsp;sull&#39;asse Y. Quando il giocatore inclina la nave in alto o in basso la camera si adatta al movimento (senza troppa rigidit&agrave;), la velocit&agrave; sul piano XZ viene diminuita essendo moltiplicata per il coseno dell&#39;angolo di inclinazione, mentre la velocit&agrave; verticale viene amplificata dall&#39;aumentare del relativo angolo Beta (seno).</p>
+
+<pre style="margin-left: 40px;">
+Space</pre>
+
+<p style="margin-left: 80px;">La classe Space contiene tutto quello che riguarda la realizzazione del mondo circostante. Per la realizzazione finale &egrave; stata preferita una struttura del mondo a cubo (Skybox), in quanto la realizzazione a sfera provocava alcuni effetti visivi indisiderati una volta rivestiti i &quot;muri&quot; con la texture dello Spazio profondo.</p>
+
+<pre style="margin-left: 40px;">
+Star</pre>
+
+<p style="margin-left: 80px;">Rappresenta la stella presente nello scenario, una classe comunque estendibile per altri eventuali oggetti. Qui viene caricata la mesh sferica e viene istanziata la Luce principale.</p>
+
+<pre style="margin-left: 40px;">
+SecretTech</pre>
+
+<p style="margin-left: 80px;">Rappresenta il singolo artefatto da raccogliere nel gioco. La relativa classe SecretTechManager si occupa dello spawn&nbsp;in giro per lo spazio di ogni nuovo artefatto secondo parametri generati casualmente (posizione, rotazione, collisioni con la nave, ecc...).</p>
+
+<pre style="margin-left: 40px;">
+XWing / ResistanceFleet</pre>
+
+<p style="margin-left: 80px;">La classe Enemy immagazzina i generici parametri degli X-Wing che li denontano come entit&agrave; (velocit&agrave;, scala, posizione, ecc...), la classe ResistanceFleet &egrave; fondamentale perch&egrave; gestisce il loro spawn, lo spostamento in base alla posizione del giocatore, la morte, le collisioni, e cos&igrave; via.</p>
+
+<pre style="margin-left: 40px;">
+Scenario</pre>
+
+<p style="margin-left: 80px;">Classe in cui avvengono i caricamenti delle mesh che fanno parte dello scenario e con cui non si interagisce.</p>
+
+<p>Altre classi sono state implementate per quanto riguarda la gestione dell&#39;input; per le texture; rendering del testo e il menu.</p>
+</body>
+</html>

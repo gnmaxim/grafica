@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+	<title>HTML Editor - Full Version</title>
+</head>
+<body>
+<h2>Sistema</h2>
+
+<p>Altre interazioni con il gioco sono definite dai seguenti comandi:</p>
+
+<ul>
+	<li>F1 per visualizzare il messaggio di inizio partita;</li>
+	<li>F2 per attivare e disattivare la simulazione delle ombre;</li>
+	<li>F3 per cambiare la modalit&agrave; le posizioni della camera.</li>
+</ul>
+
+<h3>Ombre</h3>
+
+<p>Il gioco presenta un piano verticale (che rappresenta un rottame della Morte Nera andata distrutta) che &egrave; stato scelto come superficie per simulare l&#39;ombra degli oggetti vaganti nella mappa giocabile. Gli oggetti la cui ombra &egrave; visibile sono:</p>
+
+<ol>
+	<li>StarDestroyer;</li>
+	<li>X-Wing;</li>
+	<li>artefatto tecnologico.</li>
+</ol>
+
+<p>Nella fase di preparazione del progetto sono state valutate diverse techniche per la simulazione delle ombre (incluso lo Shadow Mapping con test di profondit&agrave;). Tuttavia,&nbsp;per limitare la dipendenza da librerie esterne come richiesto dalle specifiche del progetto, &egrave; stato scelto di <em>renderizzare&nbsp;</em>nuovamente le mesh stesse dei corpi spaziali, sul piano verticale che corrisponde alla superficie del rottame della Morte Nera. La realizzazione delle ombre varia leggermente in base all&#39;oggetto, ma il procedimento &egrave; sostanzialmente identico:</p>
+
+<ol>
+	<li>per motivi di complessit&agrave; &egrave; stato scelto di renderizzare le ombre solo se le coordinate dell&#39;oggetto nel sistema di riferimento hanno un valore x positivo;</li>
+	<li>viene eseguita una traslazione della mesh su piano verticale con valore x fisso;</li>
+	<li>vengono eseguite opportune rotazioni&nbsp;della mesh in base in base agli stessi angoli alfa e beta per avere un&#39;ombra nella quale ci si &quot;rispecchia&quot;;</li>
+	<li>la scala aumenta man mano che l&#39;oggetto si avvicina alla superficie verticale;</li>
+	<li>la mesh viene appiattita sul piano verticale;</li>
+	<li>il colore scelto &egrave; nero per simulare le ombre spaziali che dipendono unicamente dall&#39;unica fonte di luce che &egrave; la stella del sistema.</li>
+</ol>
+
+<p>&Egrave;&nbsp;stata&nbsp;inserita la funzionalit&agrave; OpenGL&nbsp;chiamata&nbsp;<strong>Blending</strong>, nonostante il colore profondamente nero dell&#39;ombra,&nbsp;dato che concettualmente &egrave; comunque vero che le ombre si &quot;mescolano&quot; con la superficie e sono &quot;trasparenti&quot;.</p>
+
+<h3>Luce</h3>
+
+<p>L&#39;unica fonte di luce presente nella scena &egrave; quella della stella del sistema, ed &egrave; stata posizionata proprio all&#39;interno della mesh sferica la rappresenta. Le caratteristiche principali della fonte di luce sono le seguenti:</p>
+
+<ul>
+	<li>posizionale;</li>
+	<li>la luce diffusa &egrave; di colore chiaro ma leggermente tendente al blu per essere in sintonia con il colore della texture della stella;</li>
+	<li>la luce ambiente ha sempre un tocco lieve tocco di blu ma &egrave; molto bassa per fare s&igrave; che l&#39;unica luce percepita sia quella della stella.</li>
+</ul>
+
+<h3>Superfici</h3>
+
+<p>In OpenGL le propriet&agrave; delle luci e delle superfici hanno molto in comune, e molte superfici condividono le idee sopra elencate. Una particolare superficie &egrave; quella della stella stessa.&nbsp;Ha infatti una componente di emissione&nbsp;(GL_EMISSION) di luce (che in realt&agrave;, si ricorda, non ha niente a che fare con la luce ma esclusivamente con la superficie) che dona alla stella l&#39;aspetto dell&#39;oggetto pi&ugrave; luminoso della scena: non riflette nulla e&nbsp;non ha ombre.</p>
+
+<p>Come gi&agrave; accennato, la superficie della nave tende al rosso in modalit&agrave; UltraEngine.</p>
+
+<h3>Texture</h3>
+
+<p>Le texture sono caricati da relativi file per ogni mesh, e le loro coordinate vengono generate automaticamente a tempo di esecuzione.</p>
+
+<h4>Note</h4>
+
+<p>Nella fase di sviluppo &egrave; stato utilizzato un sistema con le seguenti specifiche senza alcun problema di prestazioni:</p>
+
+<ul>
+	<li>Intel i7 3630QM @&nbsp;2.40GHz;</li>
+	<li>8GB RAM.</li>
+</ul>
+
+<p>Non sono stati effettuati test con appositi acceleratori grafici.</p>
+</body>
+</html>

@@ -1,0 +1,3 @@
+#pragma once
+
+enum class InputEvent {ACTIVATE_ULTRA, MENU, QUIT_MENU, SWITCH_POV, SHADOW_SIMULATION};
